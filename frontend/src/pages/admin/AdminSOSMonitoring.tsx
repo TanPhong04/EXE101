@@ -31,7 +31,6 @@ type SosAlert = {
   note?: string;
 };
 
-const API_BASE = 'http://localhost:3000';
 const MOCK_KEY = 'mock_sos_alerts_v1';
 
 const seedMockAlerts = (): SosAlert[] => ([
@@ -125,21 +124,12 @@ const AdminSOSMonitoring: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}/sosAlerts?_sort=createdAt&_order=desc`);
-      if (!res.ok) {
-        // Fallback demo data when json-server endpoint doesn't exist
-        const demo = loadMock().sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        setAlerts(demo);
-        if (!selectedId && demo.length > 0) setSelectedId(demo[0].id);
-        return;
-      }
-      const data = await res.json();
-      setAlerts(data);
-      if (!selectedId && data.length > 0) setSelectedId(data[0].id);
+      const demo = loadMock().sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setAlerts(demo);
+      if (!selectedId && demo.length > 0) setSelectedId(demo[0].id);
     } catch (err: any) {
-      // Also fallback to mock data on network errors
       const demo = loadMock().sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
@@ -207,24 +197,11 @@ const AdminSOSMonitoring: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}/sosAlerts/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) {
-        // demo mode update
-        const next = alerts.map((a) => (a.id === id ? { ...a, status } : a));
-        setAlerts(next);
-        saveMock(next);
-        return;
-      }
-      await refresh();
-    } catch (err: any) {
-      // demo mode update
       const next = alerts.map((a) => (a.id === id ? { ...a, status } : a));
       setAlerts(next);
       saveMock(next);
+    } catch (err: any) {
+      setError(err.message || 'Failed to update status.');
     } finally {
       setLoading(false);
     }

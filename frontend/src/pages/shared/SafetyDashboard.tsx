@@ -44,27 +44,17 @@ const SafetyDashboard: React.FC = () => {
       lng: null,
       note: 'SOS triggered from Safety Dashboard.',
     };
+    setSending(true);
     try {
-      setSending(true);
-      const res = await fetch('http://localhost:3000/sosAlerts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(`Failed to create SOS alert (${res.status})`);
+      // Demo mode: store to localStorage so admin page can read it
+      const key = 'mock_sos_alerts_v1';
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      const next = [payload, ...arr];
+      localStorage.setItem(key, JSON.stringify(next));
       setSent(true);
-    } catch (e) {
-      // Demo fallback: store to localStorage so admin demo page can read it
-      try {
-        const key = 'mock_sos_alerts_v1';
-        const raw = localStorage.getItem(key);
-        const arr = raw ? JSON.parse(raw) : [];
-        const next = [payload, ...arr];
-        localStorage.setItem(key, JSON.stringify(next));
-        setSent(true);
-      } catch {
-        alert('Could not send SOS. Please try again.');
-      }
+    } catch {
+      alert('Could not send SOS. Please try again.');
     } finally {
       setSending(false);
     }

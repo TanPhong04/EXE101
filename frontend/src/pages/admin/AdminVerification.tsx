@@ -5,6 +5,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { buddyService, userService } from '../../services/api';
 
 interface VerificationRecord {
   id: string;
@@ -32,7 +33,7 @@ const AdminVerification: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load accounts that need verification from json-server (db.json)
+  // Load accounts from mock/localStorage DB
   useEffect(() => {
     const fetchVerifications = async () => {
       try {
@@ -40,20 +41,10 @@ const AdminVerification: React.FC = () => {
         setError(null);
 
         // Lấy cả users và buddies, ưu tiên trạng thái từ buddies (Buddy tự upload CCCD)
-        const [usersRes, buddiesRes] = await Promise.all([
-          fetch('http://localhost:3000/users'),
-          fetch('http://localhost:3000/buddies'),
+        const [users, buddies] = await Promise.all([
+          userService.getAll(),
+          buddyService.getAll(),
         ]);
-
-        if (!usersRes.ok) {
-          throw new Error(`Failed to load users (${usersRes.status})`);
-        }
-        if (!buddiesRes.ok) {
-          throw new Error(`Failed to load buddies (${buddiesRes.status})`);
-        }
-
-        const users = await usersRes.json();
-        const buddies = await buddiesRes.json();
 
         const buddyById = new Map<string, any>();
         (buddies as any[]).forEach((b) => buddyById.set(String(b.id), b));
@@ -114,19 +105,11 @@ const AdminVerification: React.FC = () => {
   const handleApprove = async (record: VerificationRecord) => {
     try {
       setError(null);
-      await fetch(`http://localhost:3000/users/${record.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verificationStatus: 'verified' }),
-      });
+      await userService.patchById(record.id, { verificationStatus: 'verified' });
 
       // Nếu là Buddy thì cập nhật luôn hồ sơ trong 'buddies'
       if (record.type === 'Buddy') {
-        await fetch(`http://localhost:3000/buddies/${record.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ verificationStatus: 'verified' }),
-        });
+        await buddyService.updateProfile(record.id, { verificationStatus: 'verified' });
       }
 
       setVerifications((prev) =>
@@ -149,24 +132,16 @@ const AdminVerification: React.FC = () => {
     if (!rejectReason) return;
     try {
       setError(null);
-      await fetch(`http://localhost:3000/users/${record.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          verificationStatus: 'rejected',
-          verificationRejectReason: rejectReason,
-        }),
+      await userService.patchById(record.id, {
+        verificationStatus: 'rejected',
+        verificationRejectReason: rejectReason,
       });
 
       if (record.type === 'Buddy') {
-        await fetch(`http://localhost:3000/buddies/${record.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            verificationStatus: 'rejected',
-            verificationRejectReason: rejectReason,
-          }),
-        });
+        await buddyService.updateProfile(record.id, {
+          verificationStatus: 'rejected',
+          verificationRejectReason: rejectReason,
+        } as any);
       }
 
       setVerifications((prev) =>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Shield, Lock, Layout, Command, ArrowRight, Eye, EyeOff, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, Lock, Command, ArrowRight, Eye, EyeOff, Compass } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +33,7 @@ const AdminLogin: React.FC = () => {
               Local<span className="text-indigo-500">Buddy</span>
             </h1>
             <p className="text-slate-500 font-black tracking-[0.4em] text-[10px] uppercase">
-              Administrative Control Gateway
+              Admin Portal
             </p>
           </div>
         </div>
@@ -43,14 +43,14 @@ const AdminLogin: React.FC = () => {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-indigo-600 animate-gradient-x"></div>
           
           <div className="mb-10">
-            <h2 className="text-2xl font-black text-white tracking-tight">Identity Authentication</h2>
-            <p className="text-slate-500 text-sm font-bold mt-1">Please enter your specialized credentials.</p>
+            <h2 className="text-2xl font-black text-white tracking-tight">Admin sign in</h2>
+            <p className="text-slate-500 text-sm font-bold mt-1">Use your email and password.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-8">
             <div className="space-y-6">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-4">Registry ID</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-4">Email</label>
                 <div className="relative group/input">
                   <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-indigo-500 transition-colors">
                     <Command size={22} />
@@ -66,7 +66,7 @@ const AdminLogin: React.FC = () => {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-4">Access Secret</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-4">Password</label>
                 <div className="relative group/input">
                   <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-indigo-500 transition-colors">
                     <Lock size={22} />
@@ -93,18 +93,16 @@ const AdminLogin: React.FC = () => {
               type="submit"
               className="w-full h-24 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[32px] font-black text-2xl shadow-2xl shadow-indigo-600/30 flex items-center justify-center gap-4 group/btn transition-all active:scale-95 border-b-[6px] border-indigo-800"
             >
-              Initialize Node <ArrowRight size={32} className="group-hover/btn:translate-x-3 transition-transform duration-500" />
+              Sign in <ArrowRight size={32} className="group-hover/btn:translate-x-3 transition-transform duration-500" />
             </button>
           </form>
 
           {/* Quick Actions */}
           <div className="mt-12 pt-8 border-t border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
-            <Link to="/" className="hover:text-indigo-400 transition-colors flex items-center gap-3">
-              <Layout size={16} /> Exit to Matrix
-            </Link>
+            <span />
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span>v2.4.5 Stable</span>
+              <span>Online</span>
             </div>
           </div>
         </div>
@@ -113,7 +111,7 @@ const AdminLogin: React.FC = () => {
         <div className="mt-10 flex items-center justify-center gap-3 text-slate-700">
           <Shield size={16} className="text-slate-800" />
           <p className="text-[10px] font-black uppercase tracking-[0.1em]">
-            This terminal is encrypted and monitored by LocalBuddy Security Protocol.
+            This page is for admins only.
           </p>
         </div>
       </div>

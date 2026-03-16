@@ -51,7 +51,7 @@ const LoginPage: React.FC = () => {
           <div className="space-y-2 mb-10">
             <h1 className="text-[42px] font-black text-[#1A1A1A] tracking-tight leading-tight">Welcome Back</h1>
             <p className="text-[#9CA3AF] font-medium text-lg leading-relaxed">
-              Ready for your next adventure? Log in to continue.
+              Sign in to continue.
             </p>
           </div>
 
@@ -107,7 +107,7 @@ const LoginPage: React.FC = () => {
               disabled={loading}
               className="w-full bg-[#FF7E4B] hover:bg-[#FF6B35] text-white py-4.5 text-lg font-bold rounded-2xl shadow-[0_10px_20px_rgba(255,126,75,0.2)] transition-all hover:scale-[1.02] active:scale-95 border-none"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
 
@@ -130,7 +130,7 @@ const LoginPage: React.FC = () => {
 
           <div className="text-center mt-10">
             <p className="text-sm font-bold text-[#9CA3AF]">
-              Don't have an account? <Link to="/signup" className="text-[#FF7E4B] hover:underline">Join the community</Link>
+              Don't have an account? <Link to="/signup" className="text-[#FF7E4B] hover:underline">Sign up</Link>
             </p>
           </div>
         </div>

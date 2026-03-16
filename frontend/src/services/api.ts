@@ -135,6 +135,28 @@ export const bookingService = {
   },
 };
 
+export const userService = {
+  getAll: async () => {
+    const db = loadDb();
+    return clone(ensureArray(db, 'users'));
+  },
+  getById: async (id: string) => {
+    const db = loadDb();
+    const users = ensureArray(db, 'users');
+    const found = getById<any>(users, id);
+    if (!found) throw new Error('User not found');
+    return clone(found);
+  },
+  patchById: async (id: string, patch: any) => {
+    const db = loadDb();
+    const users = ensureArray(db, 'users');
+    const updated = patchById<any>(users, id, patch);
+    if (!updated) throw new Error('User not found');
+    saveDb(db);
+    return clone(updated);
+  },
+};
+
 export const matchService = {
   getAll: async () => {
     const db = loadDb();
@@ -146,6 +168,20 @@ export const earningService = {
   getStats: async () => {
     const db = loadDb();
     return clone(db.earnings || { transactions: [] });
+  },
+  setTransactions: async (transactions: any[]) => {
+    const db = loadDb();
+    db.earnings = { ...(db.earnings || {}), transactions };
+    saveDb(db);
+    return clone(db.earnings);
+  },
+  appendTransaction: async (tx: any) => {
+    const db = loadDb();
+    const current = (db.earnings?.transactions || []) as any[];
+    const next = [...current, tx];
+    db.earnings = { ...(db.earnings || {}), transactions: next };
+    saveDb(db);
+    return clone(db.earnings);
   },
 };
 

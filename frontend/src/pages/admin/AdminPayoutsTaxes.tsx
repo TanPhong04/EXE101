@@ -9,6 +9,7 @@ import {
   Receipt,
 } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { buddyService, earningService } from '../../services/api';
 
 type Buddy = {
   id: string;
@@ -43,7 +44,6 @@ type PayoutRequest = {
   bankAccountName: string;
 };
 
-const API_BASE = 'http://localhost:3000';
 const MOCK_KEY = 'mock_payout_requests_v1';
 
 function formatMoney(n: number) {
@@ -124,45 +124,24 @@ const AdminPayoutsTaxes: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const [bRes, eRes, pRes] = await Promise.all([
-        fetch(`${API_BASE}/buddies`),
-        fetch(`${API_BASE}/earnings`),
-        fetch(`${API_BASE}/payoutRequests`),
+      const [b, e] = await Promise.all([
+        buddyService.getAll(),
+        earningService.getStats(),
       ]);
 
-      if (!bRes.ok) throw new Error(`Failed to load buddies (${bRes.status})`);
-      if (!eRes.ok) throw new Error(`Failed to load earnings (${eRes.status})`);
-
-      const b = await bRes.json();
-      const e = await eRes.json();
-
-      // payoutRequests might not exist yet in db.json → treat as empty
-      const pApi = pRes.ok ? await pRes.json() : [];
-      // Demo fallback: if API missing OR empty, use localStorage mock (and seed if needed)
-      let p = pApi;
+      // payoutRequests are demo-only and stored in localStorage
+      let p = loadMockPayoutRequests();
       if (!Array.isArray(p) || p.length === 0) {
-        const fromLs = loadMockPayoutRequests();
-        if (fromLs.length > 0) {
-          p = fromLs;
-        } else {
-          const seeded = seedMockPayoutRequests(b);
-          saveMockPayoutRequests(seeded);
-          p = seeded;
-        }
+        const seeded = seedMockPayoutRequests(b as any);
+        saveMockPayoutRequests(seeded);
+        p = seeded;
       }
 
-      setBuddies(b);
-      setEarnings(e);
+      setBuddies(b as any);
+      setEarnings(e as any);
       setPayoutRequests(p);
     } catch (err: any) {
-      // Demo fallback on network errors
-      const fromLs = loadMockPayoutRequests();
-      if (fromLs.length > 0) {
-        setPayoutRequests(fromLs);
-        setError(null);
-      } else {
-        setError(err?.message || 'Failed to load payouts data.');
-      }
+      setError(err?.message || 'Failed to load payouts data.');
     } finally {
       setLoading(false);
     }
@@ -234,53 +213,27 @@ const AdminPayoutsTaxes: React.FC = () => {
       const paidAt = new Date().toISOString();
 
       // 1) Mark payout request as PAID
-      const pr = await fetch(`${API_BASE}/payoutRequests/${p.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'PAID' as const, paidAt }),
-      });
-      if (!pr.ok) {
-        // Demo mode: update localStorage only
-        const next = payoutRequests.map((x) =>
-          x.id === p.id ? { ...x, status: 'PAID' as const, paidAt } : x
-        );
-        setPayoutRequests(next);
-        saveMockPayoutRequests(next);
-        return;
-      }
+      const next = payoutRequests.map((x) =>
+        x.id === p.id ? { ...x, status: 'PAID' as const, paidAt } : x
+      );
+      setPayoutRequests(next);
+      saveMockPayoutRequests(next);
 
       // 2) Append a payout transaction into earnings so wallet balances reflect it
       const tax = p.amount * (p.taxRate ?? 0);
       const net = p.amount - tax;
-      const current = await fetch(`${API_BASE}/earnings`);
-      const e: Earnings = await current.json();
-      const nextTx = [
-        ...(e.transactions || []),
-        {
-          id: String(Date.now()),
-          buddyId: String(p.buddyId),
-          type: 'payout',
-          amount: -Math.abs(net),
-          target: 'Bank Transfer',
-          date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
-        },
-      ];
-
-      const pe = await fetch(`${API_BASE}/earnings`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transactions: nextTx }),
+      await earningService.appendTransaction({
+        id: String(Date.now()),
+        buddyId: String(p.buddyId),
+        type: 'payout',
+        amount: -Math.abs(net),
+        target: 'Bank Transfer',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
       });
-      if (!pe.ok) throw new Error(`Failed to update earnings (${pe.status})`);
 
-      await refresh();
+      setEarnings(await earningService.getStats() as any);
     } catch (err: any) {
-      // Demo mode fallback
-      const next = payoutRequests.map((x) =>
-        x.id === p.id ? { ...x, status: 'PAID' as const, paidAt: new Date().toISOString() } : x
-      );
-      setPayoutRequests(next);
-      saveMockPayoutRequests(next);
+      setError(err?.message || 'Failed to confirm paid.');
     } finally {
       setLoading(false);
     }
