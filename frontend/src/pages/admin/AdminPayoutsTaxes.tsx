@@ -237,12 +237,12 @@ const AdminPayoutsTaxes: React.FC = () => {
       const pr = await fetch(`${API_BASE}/payoutRequests/${p.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'PAID', paidAt }),
+        body: JSON.stringify({ status: 'PAID' as const, paidAt }),
       });
       if (!pr.ok) {
         // Demo mode: update localStorage only
         const next = payoutRequests.map((x) =>
-          x.id === p.id ? { ...x, status: 'PAID', paidAt } : x
+          x.id === p.id ? { ...x, status: 'PAID' as const, paidAt } : x
         );
         setPayoutRequests(next);
         saveMockPayoutRequests(next);
@@ -277,7 +277,7 @@ const AdminPayoutsTaxes: React.FC = () => {
     } catch (err: any) {
       // Demo mode fallback
       const next = payoutRequests.map((x) =>
-        x.id === p.id ? { ...x, status: 'PAID', paidAt: new Date().toISOString() } : x
+        x.id === p.id ? { ...x, status: 'PAID' as const, paidAt: new Date().toISOString() } : x
       );
       setPayoutRequests(next);
       saveMockPayoutRequests(next);

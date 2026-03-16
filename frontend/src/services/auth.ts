@@ -1,4 +1,4 @@
-import { api } from './api';
+import { mockData } from '../mock/mockData';
 
 export type UserRole = 'TRAVELER' | 'BUDDY';
 
@@ -14,6 +14,7 @@ export interface User {
   languages?: string[];
   description?: string;
   interests?: string[];
+  rating?: number;
   verificationStatus?: 'verified' | 'pending' | 'unverified';
 }
 
@@ -25,13 +26,11 @@ export interface AuthResponse {
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const trimmedEmail = email.trim();
-    const response = await api.get<User[]>('/users', {
-      params: { email: trimmedEmail }
-    });
-    
-    const user = response.data.find(u => 
-      u.email.toLowerCase() === trimmedEmail.toLowerCase() && 
-      (u as any).password === password
+    const users: any[] = (mockData.users || []);
+    const user = users.find(
+      (u) =>
+        String(u.email || '').toLowerCase() === trimmedEmail.toLowerCase() &&
+        String((u as any).password || '') === String(password)
     );
 
     if (user) {
@@ -44,22 +43,24 @@ export const authService = {
   },
 
   register: async (userData: Omit<User, 'id'> & { password: string }): Promise<AuthResponse> => {
-    // Check if user exists
-    const existing = await api.get('/users', { params: { email: userData.email } });
-    if (existing.data.length > 0) {
+    const users: any[] = (mockData.users || []);
+    const exists = users.some((u) => String(u.email || '').toLowerCase() === String(userData.email).toLowerCase());
+    if (exists) {
       throw new Error('Email already exists');
     }
 
-    const response = await api.post('/users', {
+    const user = {
       ...userData,
-      id: Math.random().toString(36).substr(2, 9)
-    });
-
-    const user = response.data;
+      id: Math.random().toString(36).substr(2, 9),
+    } as any;
+    // NOTE: this is a simple in-memory seed; persistence is handled in services/api.ts via localStorage.
+    users.push(user);
+    mockData.users = users;
 
     // If registering as a BUDDY, create a basic entry in the buddies collection
     if (user.role === 'BUDDY') {
-      await api.post('/buddies', {
+      const buddies: any[] = (mockData.buddies || []);
+      buddies.push({
         id: user.id,
         name: user.name,
         location: 'Vietnam',
@@ -72,6 +73,7 @@ export const authService = {
         price: 15,
         availability: 'Available'
       });
+      mockData.buddies = buddies;
     }
 
     const token = btoa(JSON.stringify(user));
@@ -88,7 +90,11 @@ export const authService = {
   },
 
   updateProfile: async (id: string, userData: Partial<User>): Promise<User> => {
-    const response = await api.patch(`/users/${id}`, userData);
-    return response.data;
+    const users: any[] = (mockData.users || []);
+    const idx = users.findIndex((u) => String(u.id) === String(id));
+    if (idx === -1) throw new Error('User not found');
+    users[idx] = { ...users[idx], ...userData };
+    mockData.users = users;
+    return users[idx] as User;
   }
 };

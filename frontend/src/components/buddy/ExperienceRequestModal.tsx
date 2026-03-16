@@ -203,9 +203,6 @@ const ExperienceRequestModal: React.FC<ExperienceRequestModalProps> = ({
           {/* Map Preview */}
           <div className="relative rounded-[32px] overflow-hidden border border-gray-100 shadow-inner group h-48 bg-gray-50">
              <iframe 
-                src={`https://www.google.com/maps/embed/v1/search?key=${/* Use project API key if found, fallback to placeholder */ ''}&q=${encodeURIComponent(location || 'Hanoi, Vietnam')}&zoom=15`}
-                // Or use the simplified embed without key if the project doesn't have one set up globally
-                // Since I didn't find a key, I'll use the search embed format that works better for general queries
                 src={`https://maps.google.com/maps?q=${encodeURIComponent(location || 'Hanoi, Vietnam')}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                 width="100%" 
                 height="100%" 
