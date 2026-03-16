@@ -18,7 +18,7 @@
     --admin-input-bg: #f8fafc;
   }
 
-  .dark {
+  .admin-dark {
     --admin-bg: #020617;
     --admin-sidebar: #0f172a;
     --admin-card: #111827;
@@ -32,12 +32,7 @@
   }
 
   body {
-    @apply font-sans antialiased text-admin-main;
-    background-color: var(--admin-bg);
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tighter text-admin-main;
+    @apply font-sans antialiased;
   }
 }
 

@@ -17,8 +17,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+    root.classList.remove('admin-dark');
+    if (theme === 'dark') {
+      root.classList.add('admin-dark');
+    }
     localStorage.setItem('admin-theme', theme);
   }, [theme]);
 
