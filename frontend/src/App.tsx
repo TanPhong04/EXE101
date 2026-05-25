@@ -12,9 +12,7 @@ import ExploreExperiences from './pages/traveler/ExploreExperiences';
 import ExperienceDetail from './pages/traveler/ExperienceDetail';
 import TravelerProfile from './pages/traveler/TravelerProfile';
 import BuddyProfile from './pages/buddy/BuddyProfile';
-import MatchConfirmation from './pages/traveler/MatchConfirmation';
 import Messaging from './pages/shared/Messaging';
-import Matches from './pages/traveler/Matches';
 import PlanExperience from './pages/traveler/PlanExperience';
 import Checkout from './pages/traveler/Checkout';
 import BookingDetails from './pages/shared/BookingDetails';
@@ -51,9 +49,7 @@ function App() {
       <Route path="/register/buddy" element={<BuddyRegistration />} />
       <Route path="/traveller/profile/edit" element={<EditProfile />} />
       <Route path="/traveller/buddy/:id" element={<BuddyProfile />} />
-      <Route path="/traveller/match" element={<MatchConfirmation />} />
       <Route path="/traveller/messages" element={<Messaging />} />
-      <Route path="/traveller/matches" element={<Matches />} />
       <Route path="/traveller/plan/:id" element={<PlanExperience />} />
       <Route path="/traveller/checkout" element={<Checkout />} />
       <Route path="/traveller/booking/:id" element={<BookingDetails />} />
