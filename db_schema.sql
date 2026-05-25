@@ -20,9 +20,9 @@ CREATE TYPE public.user_role AS ENUM (
 
 -- Buddy profile verification status
 CREATE TYPE public.buddy_status AS ENUM (
-  'pending',
-  'verified',
-  'unverified'
+  'PENDING',
+  'VERIFIED',
+  'UNVERIFIED'
 );
 
 -- Booking status representation
@@ -43,16 +43,16 @@ CREATE TYPE public.meetup_status AS ENUM (
 
 -- Payment status representation
 CREATE TYPE public.payment_status AS ENUM (
-  'pending',
-  'held',
-  'released',
-  'refunded'
+  'PENDING',
+  'HELD',
+  'RELEASED',
+  'REFUNDED'
 );
 
 -- Transaction types for buddy earnings ledger
 CREATE TYPE public.transaction_type AS ENUM (
-  'income',
-  'payout'
+  'INCOME',
+  'PAYOUT'
 );
 
 -- Payout requests status
@@ -97,7 +97,7 @@ CREATE TABLE public.buddy_profiles (
   availability text, -- Text representation of schedule/availability
   id_card_front text, -- Base64/CDN URL
   id_card_back text, -- Base64/CDN URL
-  verification_status public.buddy_status NOT NULL DEFAULT 'pending'::public.buddy_status,
+  verification_status public.buddy_status NOT NULL DEFAULT 'PENDING'::public.buddy_status,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT buddy_profiles_pkey PRIMARY KEY (id),
@@ -114,7 +114,7 @@ CREATE TABLE public.tourist_profiles (
   languages text[] DEFAULT '{}',
   interests text[] DEFAULT '{}', -- E.g., {"History", "Cuisine", "Old Quarter"}
   description text, -- Bio/Intro description
-  verification_status public.buddy_status NOT NULL DEFAULT 'pending'::public.buddy_status,
+  verification_status public.buddy_status NOT NULL DEFAULT 'PENDING'::public.buddy_status,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT tourist_profiles_pkey PRIMARY KEY (id),
@@ -242,7 +242,7 @@ CREATE TABLE public.payments (
   deposit_amount numeric NOT NULL DEFAULT 0.0,
   deposit_pct numeric NOT NULL DEFAULT 30.00,
   remaining_amount numeric NOT NULL DEFAULT 0.0,
-  status public.payment_status NOT NULL DEFAULT 'pending'::public.payment_status,
+  status public.payment_status NOT NULL DEFAULT 'PENDING'::public.payment_status,
   payment_method character varying,
   transaction_ref character varying,
   escrow_held boolean NOT NULL DEFAULT true,
