@@ -8,6 +8,34 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================
+-- 0. CLEANUP (Makes the script safely re-runnable)
+-- ==========================================
+DROP TABLE IF EXISTS public.user_reports CASCADE;
+DROP TABLE IF EXISTS public.notifications CASCADE;
+DROP TABLE IF EXISTS public.experiences CASCADE;
+DROP TABLE IF EXISTS public.reviews CASCADE;
+DROP TABLE IF EXISTS public.payout_requests CASCADE;
+DROP TABLE IF EXISTS public.earnings_transactions CASCADE;
+DROP TABLE IF EXISTS public.payments CASCADE;
+DROP TABLE IF EXISTS public.cancellations CASCADE;
+DROP TABLE IF EXISTS public.booking_requests CASCADE;
+DROP TABLE IF EXISTS public.bookings CASCADE;
+DROP TABLE IF EXISTS public.messages CASCADE;
+DROP TABLE IF EXISTS public.conversations CASCADE;
+DROP TABLE IF EXISTS public.availability CASCADE;
+DROP TABLE IF EXISTS public.tourist_profiles CASCADE;
+DROP TABLE IF EXISTS public.buddy_profiles CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
+DROP TYPE IF EXISTS public.user_role CASCADE;
+DROP TYPE IF EXISTS public.buddy_status CASCADE;
+DROP TYPE IF EXISTS public.booking_status CASCADE;
+DROP TYPE IF EXISTS public.meetup_status CASCADE;
+DROP TYPE IF EXISTS public.payment_status CASCADE;
+DROP TYPE IF EXISTS public.transaction_type CASCADE;
+DROP TYPE IF EXISTS public.payout_status CASCADE;
+
+-- ==========================================
 -- 1. ENUMS AND CUSTOM TYPES
 -- ==========================================
 
