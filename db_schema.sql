@@ -17,8 +17,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================================================
 
 DROP TABLE IF EXISTS user_reports CASCADE;
-DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS experience_images CASCADE;
 DROP TABLE IF EXISTS experiences CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
 DROP TABLE IF EXISTS payout_requests CASCADE;
 DROP TABLE IF EXISTS earnings_transactions CASCADE;
@@ -477,8 +478,6 @@ CREATE TABLE experiences (
 
     story_content TEXT NOT NULL,
 
-    image_url TEXT,
-
     location VARCHAR(255),
 
     rating SMALLINT
@@ -487,6 +486,23 @@ CREATE TABLE experiences (
     tags TEXT[] DEFAULT '{}',
 
     is_pinned BOOLEAN NOT NULL DEFAULT false,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ============================================================================
+-- EXPERIENCE IMAGES (1-to-N Gallery)
+-- ============================================================================
+
+CREATE TABLE experience_images (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    experience_id UUID NOT NULL
+        REFERENCES experiences(id)
+        ON DELETE CASCADE,
+
+    image_url TEXT NOT NULL,
+    display_order INTEGER DEFAULT 0,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -583,6 +599,9 @@ ON reviews(reviewee_id);
 
 CREATE INDEX idx_notifications_receiver
 ON notifications(receiver_id);
+
+CREATE INDEX idx_experience_images_experience_id
+ON experience_images(experience_id);
 
 -- ============================================================================
 -- FOREIGN KEY FIX FOR LAST MESSAGE
