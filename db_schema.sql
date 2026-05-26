@@ -47,7 +47,8 @@ DROP TYPE IF EXISTS payment_type CASCADE;
 -- ============================================================================
 
 CREATE TYPE user_role AS ENUM (
-    'USER',
+    'TRAVELER',
+    'BUDDY',
     'ADMIN'
 );
 
@@ -123,7 +124,7 @@ CREATE TABLE users (
 
     avatar_url TEXT,
 
-    role user_role NOT NULL DEFAULT 'USER',
+    role user_role NOT NULL DEFAULT 'TRAVELER',
 
     is_buddy BOOLEAN NOT NULL DEFAULT false,
     is_active BOOLEAN NOT NULL DEFAULT true,
