@@ -394,7 +394,8 @@ CREATE TABLE earnings_transactions (
 
     transaction_type transaction_type NOT NULL,
 
-    amount NUMERIC(10,2) NOT NULL,
+    amount NUMERIC(10,2) NOT NULL
+        CHECK(amount >= 0),
 
     description TEXT,
 
